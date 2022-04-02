@@ -2,6 +2,7 @@
 #include <SDL_image.h>
 #include <iostream>
 
+#include "Entity.h"
 #include "RenderWindow.h"
 
 RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h)
@@ -29,26 +30,28 @@ void RenderWindow::cleanUp()
 {
 	SDL_DestroyWindow(window);
 }
-void RenderWindow::clear()
+void RenderWindow::clear()                                                               
 {
 	SDL_RenderClear(renderer);
 }
-void RenderWindow::render(SDL_Texture* p_tex)
+//Render entity 
+void RenderWindow::render(Entity& p_entity)
 {
 	SDL_Rect src;
-	src.x = 0;
-	src.y = 0;
-	src.w = 32;
-	src.h = 32;
+	src.x = p_entity.getCurrentFrame().x;
+	src.y = p_entity.getCurrentFrame().y;
+	src.w = p_entity.getCurrentFrame().w;
+	src.h = p_entity.getCurrentFrame().h;
 
 	SDL_Rect dst;
-	dst.x = 360;
-	dst.y = 540;
-	dst.w = 32;
-	dst.h = 32;
+	dst.x = p_entity.getPos().x* 4;
+	dst.y = p_entity.getPos().y * 4;
+	dst.w = p_entity.getCurrentFrame().w;
+	dst.h = p_entity.getCurrentFrame().h;
 
-	SDL_RenderCopy(renderer, p_tex, &src, &dst);
+	SDL_RenderCopy(renderer, p_entity.getTex(), &src, &dst);
 }
+
 void RenderWindow::display()
 {
 	SDL_RenderPresent(renderer);
