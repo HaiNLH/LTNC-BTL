@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include "Math.h"
 
 class Entity
@@ -11,6 +12,7 @@ public:
 	{
 		return pos;
 	}
+	void setPos(float x, float y);
 	SDL_Texture* getTex();
 	SDL_Rect getCurrentFrame();
 private:

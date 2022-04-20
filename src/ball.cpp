@@ -3,14 +3,16 @@
 #include <SDL_image.h>
 #include <vector>
 #include <math.h>
+
+
 #include "ball.h"
 #include "Entity.h"
 #include "Math.h"
+#include "Goal.h"
 
 Ball::Ball(Vector2 p_pos, SDL_Texture* p_tex)
 	:Entity(p_pos, p_tex)
 {
-
 }
 
 
@@ -28,9 +30,23 @@ void Ball :: setInitVelocity(float x, float y) {
 	initVelocity.x = x;
 	initVelocity.y = y;
 }
-void Ball::updateGame(bool mousestate1, bool mousestate2, float time)
+void Ball::updateGame(bool mousestate1, bool mousestate2, float time, Goal target)
 {
-
+	if (winner)
+	{
+		std::cerr << "YOU'RE THE WINNER!!!!!!! CONGRATS!!!!!!!!!!!!!!!!!!!";
+		winner = false;
+	}
+	if (getPos().x >= target.getPos().x-24 && getPos().x <= target.getPos().x+24 && getPos().y >= target.getPos().y-24  && getPos().y <= target.getPos().y +24)
+	{	
+		if (vantoc > 80) winner = false;
+		else {
+			winner = true;
+			setPos(355, 800);
+			vantoc = 0;
+			//setVelocity(0,0);
+		}
+	}
 	if (mousestate1)
 	{
 		int mouseX, mouseY;	
@@ -62,6 +78,7 @@ void Ball::updateGame(bool mousestate1, bool mousestate2, float time)
 			if (vantoc > 0)
 			{
 				vantoc -= friction * time;
+				std::cerr << vantoc << std::endl;
 			}
 			else if(vantoc<=0)
 			{

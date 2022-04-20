@@ -10,8 +10,13 @@ Entity::Entity(Vector2 p_pos, SDL_Texture* p_tex)
 	currentFrame.y = 0;
 	currentFrame.w = 32;
 	currentFrame.h = 32;
-}
+	SDL_QueryTexture(p_tex, NULL, NULL, &currentFrame.w, &currentFrame.h);//this function will return the width and height of pointer texture!!!! problem solved each texture each size
 
+}
+void Entity::setPos(float x, float y) {
+	pos.x = x;
+	pos.y = y;
+}
 SDL_Texture* Entity::getTex() {
 	return tex;
 }
