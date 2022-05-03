@@ -1,8 +1,8 @@
 #include <iostream>
-#include <SDL.h>
-#include <SDL_image.h>
 #include <vector>
 #include <math.h>
+#include <SDL.h>
+#include <SDL_image.h>
 
 
 #include "ball.h"
@@ -10,9 +10,10 @@
 #include "Math.h"
 #include "Goal.h"
 
-Ball::Ball(Vector2 p_pos, SDL_Texture* p_tex)
+Ball::Ball(Vector2 p_pos, SDL_Texture* p_tex, SDL_Texture* arrow_tex)
 	:Entity(p_pos, p_tex)
 {
+	arrow.push_back(Entity(Vector2(-64, -64), arrow_tex));
 }
 
 
@@ -30,8 +31,8 @@ void Ball :: setInitVelocity(float x, float y) {
 	initVelocity.x = x;
 	initVelocity.y = y;
 }
-void Ball::updateGame(bool mousestate1, bool mousestate2, float time, Goal target)
-{
+void Ball::updateGame(bool mousestate1, bool mousestate2, float time, Goal target, Mix_Chunk* golfhit)
+{	
 	if (winner)
 	{
 		std::cerr << "YOU'RE THE WINNER!!!!!!! CONGRATS!!!!!!!!!!!!!!!!!!!";
@@ -47,30 +48,40 @@ void Ball::updateGame(bool mousestate1, bool mousestate2, float time, Goal targe
 			//setVelocity(0,0);
 		}
 	}
-	if (mousestate1)
-	{
+	if (mousestate1 && accessible)
+	{	
 		int mouseX, mouseY;	
 		SDL_GetMouseState(&mouseX, &mouseY);
 		setInitMousePos(mouseX, mouseY);
+		chargedone = false;
 	
 	}
-	if (mousestate2)
-	{
+	if (mousestate2 && accessible)
+	{	
+		
 		int mouseX, mouseY;
 		SDL_GetMouseState(&mouseX, &mouseY);
 		vantoc=sqrt(pow(initMousePos.x-mouseX,2)+pow(initMousePos.y-mouseY,2)); // equal to distance between initmouse and downmouse
 		vantocbandau = vantoc;
 		setVelocity((mouseX - initMousePos.x)/-100, (mouseY - initMousePos.y)/-100);
 		setInitVelocity((mouseX - initMousePos.x) / -100, (mouseY - initMousePos.y) / -100);
+		arrow.at(0).setPos(getPos().x, getPos().y -32);
+		arrow.at(0).setAngle(SDL_atan2(velocity.y, velocity.x) * (180 / 3.1415) + 90);
+		
 	}
 	
 	else 
-	{
+	{	
+		if (!chargedone) {
+			Mix_PlayChannel(-1, golfhit, 0);
+			chargedone = true;
+		}
 		if (velocity.x < 0) vecx = -1;
 		else vecx = 1;
 		if (velocity.y < 0)vecy = -1;
 		else vecy = 1;
-
+		arrow.at(0).setPos(-64, -64);
+		accessible = false;
 		setPos(getPos().x + getVelocity().x * time, getPos().y + getVelocity().y * time);
 		if ( getVelocity().x > 0.0001 || getVelocity().x < -0.0001 || getVelocity().y > 0.0001 || getVelocity().y < -0.0001)
 		{
@@ -83,29 +94,36 @@ void Ball::updateGame(bool mousestate1, bool mousestate2, float time, Goal targe
 			else if(vantoc<=0)
 			{
 				vantoc = 0;
+
 			}
 			velocity.x = (vantoc / vantocbandau)*abs(initVelocity.x) * vecx;
 			velocity.y = (vantoc / vantocbandau) * abs(initVelocity.y) * vecy;
 			
 		}
+		else {
+			accessible = true;
+		}
 		if (getPos().x < 0) 
 		{
+
 			setVelocity(abs(getVelocity().x), getVelocity().y);
 
 		}
 		else if (getPos().y < 0)
-		{
+		{	
 			setVelocity(getVelocity().x, abs(getVelocity().y));
-
+			
 		}
-		else if (getPos().x > 690)
-		{
+		else if (getPos().x > 610)
+		{	
 			setVelocity(-abs(getVelocity().x),getVelocity().y);
-
+			
 		}
-		else if (getPos().y > 1050)
+		else if (getPos().y > 950)
 		{
+			
 			setVelocity(getVelocity().x, -abs(getVelocity().y));
+
 		}
 	}
 }

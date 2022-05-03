@@ -12,6 +12,12 @@ public:
 	{
 		return pos;
 	}
+	float getAngle()
+	{
+		return angle;
+	}
+	void setCenter(float x, float y);
+	void setAngle(float p_angle);
 	void setPos(float x, float y);
 	SDL_Texture* getTex();
 	SDL_Rect getCurrentFrame();
@@ -19,4 +25,5 @@ private:
 	Vector2 pos;
 	SDL_Rect currentFrame;
 	SDL_Texture* tex;
+	float angle;
 }; 

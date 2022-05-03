@@ -17,6 +17,11 @@ void Entity::setPos(float x, float y) {
 	pos.x = x;
 	pos.y = y;
 }
+void Entity::setAngle(float p_angle)
+{
+	angle = p_angle;
+}
+
 SDL_Texture* Entity::getTex() {
 	return tex;
 }
