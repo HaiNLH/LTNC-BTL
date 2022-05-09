@@ -47,10 +47,10 @@ void RenderWindow::render(Entity& p_entity)
 	src.h = p_entity.getCurrentFrame().h;
 
 	SDL_Rect dst;
-	dst.x = p_entity.getPos().x;
+	dst.x = p_entity.getPos().x ;
 	dst.y = p_entity.getPos().y;
-	dst.w = p_entity.getCurrentFrame().w;
-	dst.h = p_entity.getCurrentFrame().h;
+	dst.w = p_entity.getCurrentFrame().w*p_entity.getScale().x;
+	dst.h = p_entity.getCurrentFrame().h*p_entity.getScale().y;
 	SDL_Point center = {dst.w/2,48 };
 	SDL_RenderCopyEx(renderer, p_entity.getTex(), &src, &dst,p_entity.getAngle(),&center, SDL_FLIP_NONE);
 }
@@ -70,7 +70,7 @@ void RenderWindow::render(int p_x, int p_y, SDL_Texture* p_tex)
 	
 	SDL_RenderCopy(renderer, p_tex, &src, &dst);
 }
-void RenderWindow::renderCenter(const char* p_text, TTF_Font* font, SDL_Color textColor)
+void RenderWindow::renderword(const char* p_text, TTF_Font* font, SDL_Color textColor, int p_x, int p_y)
 {
 	SDL_Surface* surface = TTF_RenderText_Blended(font,
 		p_text, textColor);
@@ -79,37 +79,14 @@ void RenderWindow::renderCenter(const char* p_text, TTF_Font* font, SDL_Color te
 	int texW = 0;
 	int texH = 0;
 	SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
-	SDL_Rect dstrect = { 100, 100, texW, texH };
+	SDL_Rect dstrect = { p_x, p_y, texW, texH };
 	SDL_RenderCopy(renderer, texture, NULL, &dstrect);
 	SDL_RenderPresent(renderer);
 	SDL_DestroyTexture(texture);
 	SDL_FreeSurface(surface);
 
 }
-/*void RenderWindow::renderMid(int p_x, int p_y, TTF_Font* font, SDL_Color color, const char* text)
-{	
 
-	SDL_Surface* surface = TTF_RenderText_Solid(font, text, color);
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-	if (surface == NULL) {
-		std::cerr << "FAILED TO GET SURFACE!!!" << SDL_GetError() << std::endl;
-	}
-	
-	SDL_Rect src;
-	src.x = 0;
-	src.y = 0; 
-	src.w = 32;
-	src.h = 32;
-	SDL_QueryTexture(texture, NULL, NULL, &src.w, &src.h);
-	SDL_Rect dst;
-	dst.x = p_x;
-	dst.y = p_y;
-	dst.w = src.w;
-	dst.h = src.h;
-	SDL_RenderCopy(renderer, texture, &src, &dst);
-	SDL_DestroyTexture(texture);
-	SDL_FreeSurface(surface);
-}*/
 
 
 void RenderWindow::display()

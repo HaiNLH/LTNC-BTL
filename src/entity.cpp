@@ -21,7 +21,11 @@ void Entity::setAngle(float p_angle)
 {
 	angle = p_angle;
 }
-
+void Entity::setScale(float x, float y)
+{
+	scale.x = x;
+	scale.y = y;
+}
 SDL_Texture* Entity::getTex() {
 	return tex;
 }
