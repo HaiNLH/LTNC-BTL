@@ -38,7 +38,7 @@ void RenderWindow::clear()
 	SDL_RenderClear(renderer);
 }
 //Render entity 
-void RenderWindow::render(Entity& p_entity)
+void RenderWindow::rendercircle(Entity& p_entity)
 {
 	SDL_Rect src;
 	src.x = p_entity.getCurrentFrame().x;
@@ -53,6 +53,21 @@ void RenderWindow::render(Entity& p_entity)
 	dst.h = p_entity.getCurrentFrame().h*p_entity.getScale().y;
 	SDL_Point center = {dst.w/2,48 };
 	SDL_RenderCopyEx(renderer, p_entity.getTex(), &src, &dst,p_entity.getAngle(),&center, SDL_FLIP_NONE);
+}
+void RenderWindow::render(Entity& p_entity)
+{
+	SDL_Rect src;
+	src.x = p_entity.getCurrentFrame().x;
+	src.y = p_entity.getCurrentFrame().y;
+	src.w = p_entity.getCurrentFrame().w;
+	src.h = p_entity.getCurrentFrame().h;
+
+	SDL_Rect dst;
+	dst.x = p_entity.getPos().x;
+	dst.y = p_entity.getPos().y;
+	dst.w = p_entity.getCurrentFrame().w * p_entity.getScale().x;
+	dst.h = p_entity.getCurrentFrame().h * p_entity.getScale().y;
+	SDL_RenderCopy(renderer, p_entity.getTex(), &src, &dst);
 }
 void RenderWindow::render(int p_x, int p_y, SDL_Texture* p_tex)
 {

@@ -37,7 +37,7 @@ void Ball::setWinState(bool win)
 	winner = win;
 }
 
-void Ball::updateGame( bool mousestate1, bool mousestate2, float time, Goal target,Object obstacle, Mix_Chunk* golfhit, Mix_Chunk* goalhit)
+void Ball::updateGame( bool mousestate1, bool mousestate2, float time, Goal target,std:: vector <Object> obstacle, Mix_Chunk* golfhit, Mix_Chunk* goalhit)
 {	
 	if (winner)
 	{
@@ -61,8 +61,6 @@ void Ball::updateGame( bool mousestate1, bool mousestate2, float time, Goal targ
 		
 		setScale(getScale().x - 0.001 * time, getScale().y - 0.001 * time);
 		std::cerr << "YOU'RE THE WINNER!!!!!!! CONGRATS!!!!!!!!!!!!!!!!!!!";
-		
-		
 	}
 	if (getPos().x >= target.getPos().x-24 && getPos().x <= target.getPos().x+24 && getPos().y >= target.getPos().y-24  && getPos().y <= target.getPos().y +24)
 	{	
@@ -126,7 +124,7 @@ void Ball::updateGame( bool mousestate1, bool mousestate2, float time, Goal targ
 			if (vantoc > 0)
 			{
 				vantoc -= friction * time;
-				std::cerr << vantoc << std::endl;
+				//std::cerr << vantoc << std::endl;
 			}
 			else if(vantoc<=0)
 			{
@@ -156,29 +154,30 @@ void Ball::updateGame( bool mousestate1, bool mousestate2, float time, Goal targ
 			setVelocity(-abs(getVelocity().x),getVelocity().y);
 			
 		}
-		else if (getPos().y > 950)
+		else if (getPos().y > 930)
 		{
 			
 			setVelocity(getVelocity().x, -abs(getVelocity().y));
 
 		}
-		
-		float mPosX = getPos().x + getVelocity().x * time;
-		
-		if (mPosX +32> obstacle.getPos().x && mPosX<obstacle.getPos().x + obstacle.getCurrentFrame().w && getPos().y + 32 >obstacle.getPos().y && getPos().y<obstacle.getPos().y + obstacle.getCurrentFrame().h)
+		for (Object& o : obstacle)
 		{
-			
-			setVelocity(  getVelocity().x*-1, getVelocity().y);
-			//vecx *= -1;
-		}
+			float mPosX = getPos().x + getVelocity().x * time;
+			if (mPosX +32> o.getPos().x && mPosX<o.getPos().x + o.getCurrentFrame().w && getPos().y + 32 >o.getPos().y && getPos().y<o.getPos().y + o.getCurrentFrame().h)
+			{
+				setVelocity(  getVelocity().x*-1, getVelocity().y);
+				//vecx *= -1;
+			}
 		
-		float mPosY = getPos().y + getVelocity().y * time;
-		if (getPos().x + 32 > obstacle.getPos().x && getPos().x<obstacle.getPos().x + obstacle.getCurrentFrame().w && mPosY + 32 >obstacle.getPos().y && mPosY < obstacle.getPos().y + obstacle.getCurrentFrame().h)
-		{
+			float mPosY = getPos().y + getVelocity().y * time;
+			if (getPos().x + 32 > o.getPos().x && getPos().x<o.getPos().x + o.getCurrentFrame().w && mPosY + 32 >o.getPos().y && mPosY < o.getPos().y + o.getCurrentFrame().h)
+			{
 
-			setVelocity(getVelocity().x , getVelocity().y* -1);
-			//vecy *= -1;
+				setVelocity(getVelocity().x , getVelocity().y* -1);
+					//vecy *= -1;
+			}
 		}
+		
 		
 		
 	}

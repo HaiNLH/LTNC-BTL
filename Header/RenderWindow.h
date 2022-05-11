@@ -17,6 +17,7 @@ public:
 	
 	void cleanUp();
 	void clear();
+	void rendercircle(Entity& p_entity);
 	void render(Entity& p_entity);
 	void render(int p_x, int p_y, SDL_Texture* p_tex);
 	void renderword(const char* p_text, TTF_Font* font, SDL_Color textColor, int p_x, int p_y);

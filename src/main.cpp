@@ -12,7 +12,7 @@
 #include "object.h"
 //#include "Utils.h"
 
-RenderWindow window("GAMEEEEE 1.0", 640, 980);
+RenderWindow window("GAMEEEEE 1.0", 640, 960);
 bool init()
 {
 	//Initialize all SDL subsystems
@@ -45,34 +45,100 @@ bool SDLInitEverything = init();
 TTF_Font* font = TTF_OpenFont("font/pixelfont2.ttf", 35);
 SDL_Color color = { 255, 255, 255 };
 
-SDL_Texture* ballTexture = window.loadTexture("animation/golfballbetterv1.png");
+SDL_Texture* ballTexture = window.loadTexture("animation/golfballofficial.png");
 SDL_Texture* background = window.loadTexture("animation/bg.png");
+SDL_Texture* startTexture = window.loadTexture("animation/startbg.png");
 SDL_Texture* goalTexture = window.loadTexture("animation/goal.png");
 SDL_Texture* arrowTexture = window.loadTexture("animation/arrow.png");
 SDL_Texture* obstacleTexture = window.loadTexture("animation/object.png");
-
+SDL_Texture* obstacleTexture1 = window.loadTexture("animation/object32.png");
+SDL_Texture* barTexture = window.loadTexture("animation/bar.png");
+SDL_Texture* titleStart = window.loadTexture("animation/title.png");
+SDL_Texture* uistartTexture = window.loadTexture("animation/uistart.png");
 Mix_Chunk* golfhit = Mix_LoadWAV("sfx/golfhit.wav");
 Mix_Chunk* goalhit = Mix_LoadWAV("sfx/goalsound.wav");
-Ball golf(Vector2(355, 800), ballTexture,arrowTexture);
-Goal target(Vector2(355, 100), goalTexture);
+
 //std::vector <Object> obstacles;
-Object obstacle (Vector2(150,300), obstacleTexture);
-
-//Entity entities[2] = {Entity(Vector2(50,100),ballTexture),Entity(Vector2(15,100),ballTexture) };
-
+#define MAX_LEVEL 2
 int stateMachine = 0;
 bool gameRunning = true;
 bool mousestate1 = false;
 bool mousestate2 = false;
 bool winner = false; 
 double deltaTime = 0;
-int level = 0;
+int level = 1;
 SDL_Event event;
+
+
+Ball golf(Vector2(0, 0), ballTexture, arrowTexture);
+Goal target(Vector2(0, 0), goalTexture);
+
+
+std::vector<Object> loadMap(int level)
+{
+	std::vector <Object> tmp = {};
+	switch (level)
+	{
+	case 1:
+		tmp.push_back(Object(Vector2(32 *10 , 400), obstacleTexture1));
+		tmp.push_back(Object(Vector2(32 * 10, 400), obstacleTexture1));
+		tmp.push_back(Object(Vector2(32 * 11, 400), obstacleTexture1));
+		tmp.push_back(Object(Vector2(32 * 12, 400), obstacleTexture1));
+		tmp.push_back(Object(Vector2(32 * 13, 400), obstacleTexture1));
+		tmp.push_back(Object(Vector2(32 * 14, 400), obstacleTexture1));
+		tmp.push_back(Object(Vector2(32 * 15, 400), obstacleTexture1));
+		tmp.push_back(Object(Vector2(32 * 16, 400), obstacleTexture1));
+		tmp.push_back(Object(Vector2(32 * 17, 400), obstacleTexture1));
+		tmp.push_back(Object(Vector2(32 * 18, 400), obstacleTexture1));
+		tmp.push_back(Object(Vector2(32 * 19, 400), obstacleTexture1));
+		tmp.push_back(Object(Vector2(0, 200), barTexture));
+		tmp.push_back(Object(Vector2(0, 480), obstacleTexture));
+		tmp.push_back(Object(Vector2(64, 480), obstacleTexture));
+		tmp.push_back(Object(Vector2(64 * 2, 480), obstacleTexture));
+		tmp.push_back(Object(Vector2(64 * 3, 480), obstacleTexture));
+		tmp.push_back(Object(Vector2(64 * 4, 480), obstacleTexture));
+		tmp.push_back(Object(Vector2(64 * 5, 480), obstacleTexture));
+		tmp.push_back(Object(Vector2(64 * 6, 480), obstacleTexture));
+		
+		break;
+	case 2:
+		tmp.push_back(Object(Vector2(0, 480), obstacleTexture));
+		tmp.push_back(Object(Vector2(64, 480), obstacleTexture));
+		tmp.push_back(Object(Vector2(64 * 5, 480), obstacleTexture));
+		tmp.push_back(Object(Vector2(64 * 6, 480), obstacleTexture));
+		tmp.push_back(Object(Vector2(64 * 7, 480), obstacleTexture));
+		tmp.push_back(Object(Vector2(64 * 8, 480), obstacleTexture));
+		tmp.push_back(Object(Vector2(64 * 9, 480), obstacleTexture));
+		break;
+	}
+
+	return tmp;
+}
+std::vector <Object> obstacle = loadMap(level);
+
+void loadLevel(int level)
+{	
+	golf.setVelocity(0, 0);
+	golf.setScale(1, 1);
+	golf.setWinState(false);
+	obstacle = loadMap(level);
+	std::cerr << level << std::endl;
+	switch (level)
+	{
+	case 1:
+		golf.setPos(355,800);
+		target.setPos(355,100);
+		break;
+	case 2:
+		golf.setPos(100, 300);
+		target.setPos(400, 800);
+		break;
+	}
+
+}
 
 Uint64 currentTick = SDL_GetPerformanceCounter();
 Uint64 lastTick = 0;
-
-
 void update()
 {
 	lastTick = currentTick;
@@ -81,46 +147,45 @@ void update()
 	//std::cerr << deltaTime << std::endl;
 	//deltaTime=0.222;
 	mousestate1 = false;
-	//if (menufont == NULL) {
-		//std::cerr << "FAILED SOMEWHERE I DONT KNOW XDDDD: " << TTF_GetError()<<std::endl;
-	//}
-	//while (SDL_PollEvent(&event))
 	
-		if (SDL_PollEvent(&event) == 0) {}
-		else if (event.type == SDL_QUIT) 
-		{
-			gameRunning = false;
-		}
+	if (SDL_PollEvent(&event) == 0) {}
+	else if (event.type == SDL_QUIT) 
+	{
+		gameRunning = false;
+	}
 			
-		switch (event.type)
-		{
-			case SDL_MOUSEBUTTONDOWN:
-				if (event.button.button == SDL_BUTTON_LEFT)
-				
-				{
-					mousestate1 = true;
-					mousestate2 = true;
+	switch (event.type)
+	{
+		case SDL_MOUSEBUTTONDOWN:
+			if (event.button.button == SDL_BUTTON_LEFT)
+			{
+				mousestate1 = true;
+				mousestate2 = true;
+			}
+			break;
+		case SDL_MOUSEBUTTONUP:
+			if (event.button.button == SDL_BUTTON_LEFT)
+			{
+				//mousestate1 = false;
+				mousestate2 = false;
 					
-				}
-				break;
-			case SDL_MOUSEBUTTONUP:
-				if (event.button.button == SDL_BUTTON_LEFT)
-				{
-					mousestate1 = false;
-					mousestate2 = false;
-					//if (!Mix_Playing(-1)) Mix_PlayChannel(-1, golfhit, 0);
-				}
-				break;
+			}
+			break;
 		}
-		golf.updateGame( mousestate1, mousestate2, deltaTime, target, obstacle, golfhit, goalhit);
-		if (golf.getWinState())
-		{	
-			stateMachine = 2;
-			golf.setWinState(false);
-			std::cerr << golf.getWinState();
-		}
-	
-	
+	golf.updateGame( mousestate1, mousestate2, deltaTime, target, obstacle, golfhit, goalhit);
+	if (golf.getWinState()&&level>MAX_LEVEL)
+	{	
+			
+		stateMachine = 2;
+		//golf.setWinState(false);
+		std::cerr << golf.getWinState();
+			
+	}
+	if (golf.getScale().x<-0.5&&golf.getScale().y<-0.5)
+	{	
+		level++;	
+		loadLevel(level);
+	}
 }
 void intro()
 {
@@ -139,14 +204,14 @@ void intro()
 			break;
 		}
 	}
-	window.renderword("WELCOME WELCOME: WONDERLAND", font, color, 0, 0);
+	window.clear();
+	window.render(0, 0, startTexture);
+	window.render(254, 477, uistartTexture);
+	window.render(42, 240 - 100 - 50 + 4 * SDL_sin(SDL_GetTicks() * (3.14 / 1500)), titleStart);
 	window.display();
 }
 void outtro() {
-	window.clear();
 	
-	window.renderword("GAME OVER", font, color, 220, 480);
-	window.display();
 	while (SDL_PollEvent(&event))
 	{
 		switch (event.type)
@@ -158,13 +223,16 @@ void outtro() {
 			if (event.button.button == SDL_BUTTON_LEFT)
 			{	
 				stateMachine = 1;
-				std::cerr << "THIS WAS CLICKED"<< stateMachine<<std::endl;
 				golf.setScale(1, 1);
-				golf.setPos(250, 600);
+				level = 1;
+				loadLevel(1);
 			}
 			break;
 		}
 	}
+	window.clear();
+	window.renderword("GAME OVER", font, color, 220, 480);
+	window.display();
 }
 void display()
 {
@@ -172,10 +240,14 @@ void display()
 		window.render(0, 0, background);
 		window.render(target);
 		window.render(golf);
-		window.render(obstacle);
+		for (Object& o : obstacle)
+		{
+			window.render(o);
+		}
+		
 		for (Entity& e : golf.getArrow())
 		{
-			window.render(e);
+			window.rendercircle(e);
 		}
 
 		//window.render(arrow);
@@ -205,7 +277,7 @@ void gameLoad()
 
 int main(int argc, char* args[])
 {	
-	
+	loadLevel(level);
 	while (gameRunning)
 	{
 		gameLoad();
