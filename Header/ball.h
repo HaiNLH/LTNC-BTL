@@ -26,7 +26,7 @@ public:
 	}
 	void setVelocity(float x, float y);
 	void setInitMousePos(float x, float y);
-	void updateGame( bool mousestate1, bool mousestate2,float time,Goal target, Object obstacle, Mix_Chunk* golfhit, Mix_Chunk* goalhit);
+	void updateGame( bool mousestate1, bool mousestate2,float time,Goal target, std:: vector <Object> obstacle, Mix_Chunk* golfhit, Mix_Chunk* goalhit);
 	void setInitVelocity(float x, float y);
 	void setWinState(bool win);
 	bool getWinState()

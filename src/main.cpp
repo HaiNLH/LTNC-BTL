@@ -10,6 +10,7 @@
 #include "ball.h"
 #include "Goal.h"
 #include "object.h"
+#include "ui.h"
 //#include "Utils.h"
 
 RenderWindow window("GAMEEEEE 1.0", 640, 960);
@@ -22,6 +23,11 @@ bool init()
 	}
 	if (!(IMG_Init(IMG_INIT_PNG)))
 		std::cout << "IMG_Init has failed. Error :" << SDL_GetError() << std::endl;
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
+	{
+		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+		return false;
+	}
 
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
 	{
@@ -54,10 +60,13 @@ SDL_Texture* obstacleTexture = window.loadTexture("animation/object.png");
 SDL_Texture* obstacleTexture1 = window.loadTexture("animation/object32.png");
 SDL_Texture* barTexture = window.loadTexture("animation/bar.png");
 SDL_Texture* titleStart = window.loadTexture("animation/title.png");
-SDL_Texture* uistartTexture = window.loadTexture("animation/uistart.png");
+SDL_Texture* uistartTexture = window.loadTexture("animation/uistart1.png");
+SDL_Texture* uistartTexture1 = window.loadTexture("animation/uistart2.png");
+
 Mix_Chunk* golfhit = Mix_LoadWAV("sfx/golfhit.wav");
 Mix_Chunk* goalhit = Mix_LoadWAV("sfx/goalsound.wav");
 
+//Mix_Music* introSFX = Mix_LoadMUS("sfx/intro.wav");
 //std::vector <Object> obstacles;
 #define MAX_LEVEL 2
 int stateMachine = 0;
@@ -69,7 +78,8 @@ double deltaTime = 0;
 int level = 1;
 SDL_Event event;
 
-
+ui hud(Vector2(254, 477), uistartTexture);
+ui hud1(Vector2(254, 477), uistartTexture1);
 Ball golf(Vector2(0, 0), ballTexture, arrowTexture);
 Goal target(Vector2(0, 0), goalTexture);
 
@@ -115,7 +125,14 @@ std::vector<Object> loadMap(int level)
 	return tmp;
 }
 std::vector <Object> obstacle = loadMap(level);
-
+bool inside(int x, int y)
+{	
+	if (x > hud.getPos().x && x<hud.getPos().x + hud.getCurrentFrame().w && y>hud.getPos().y && y < hud.getPos().y + hud.getCurrentFrame().h)
+	{
+		return true;
+	}
+	else return false;
+}
 void loadLevel(int level)
 {	
 	golf.setVelocity(0, 0);
@@ -189,26 +206,53 @@ void update()
 }
 void intro()
 {
-	while (SDL_PollEvent(&event))
+	
+	window.clear();
+	window.render(0, 0, startTexture);
+	
+	//window.render(254, 477, uistartTexture);
+	window.render(42, 240 - 100 - 50 + 4 * SDL_sin(SDL_GetTicks() * (3.14 / 1500)), titleStart);
+	window.render(hud);
+
+	//while (SDL_PollEvent(&event))
+	if (SDL_PollEvent(&event) == 0) {}
+	else if (event.type == SDL_QUIT)
 	{
+		gameRunning = false;
+	}
 		switch (event.type)
 		{
 		case SDL_QUIT:
 			gameRunning = false;
 			break;
+		case SDL_MOUSEMOTION:
+		{
+			//SDL_Rect* clips;
+			
+			if (inside(event.motion.x, event.motion.y))
+			{
+				SDL_WaitEvent(&event);
+				std::cerr <<"YAY" << std::endl;
+				window.render(hud1);
+				
+			}
+			
+						//clips = &hud.clip(inside);
+						//window.uirender(hud, clips);
+		}	
+		break;
 		case SDL_MOUSEBUTTONDOWN:
-			if (event.button.button == SDL_BUTTON_LEFT)
+			if (event.button.button == SDL_BUTTON_LEFT&& inside(event.motion.x, event.motion.y))
 			{
 				stateMachine = 1;
 			}
 			break;
 		}
-	}
-	window.clear();
-	window.render(0, 0, startTexture);
-	window.render(254, 477, uistartTexture);
-	window.render(42, 240 - 100 - 50 + 4 * SDL_sin(SDL_GetTicks() * (3.14 / 1500)), titleStart);
+	//}
+	
 	window.display();
+
+	
 }
 void outtro() {
 	
@@ -222,7 +266,7 @@ void outtro() {
 		case SDL_MOUSEBUTTONDOWN:
 			if (event.button.button == SDL_BUTTON_LEFT)
 			{	
-				stateMachine = 1;
+				stateMachine = 0;
 				golf.setScale(1, 1);
 				level = 1;
 				loadLevel(1);
@@ -257,7 +301,8 @@ void display()
 void gameLoad()
 {
 	if (stateMachine == 0)
-	{
+	{	
+		
 		intro();
 
 	}
@@ -277,6 +322,7 @@ void gameLoad()
 
 int main(int argc, char* args[])
 {	
+	
 	loadLevel(level);
 	while (gameRunning)
 	{
