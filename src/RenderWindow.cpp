@@ -85,6 +85,8 @@ void RenderWindow::render(int p_x, int p_y, SDL_Texture* p_tex)
 	
 	SDL_RenderCopy(renderer, p_tex, &src, &dst);
 }
+
+
 void RenderWindow::renderword(const char* p_text, TTF_Font* font, SDL_Color textColor, int p_x, int p_y)
 {
 	SDL_Surface* surface = TTF_RenderText_Blended(font,
@@ -96,10 +98,10 @@ void RenderWindow::renderword(const char* p_text, TTF_Font* font, SDL_Color text
 	SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
 	SDL_Rect dstrect = { p_x, p_y, texW, texH };
 	SDL_RenderCopy(renderer, texture, NULL, &dstrect);
-	SDL_RenderPresent(renderer);
-	SDL_DestroyTexture(texture);
-	SDL_FreeSurface(surface);
+	//SDL_RenderPresent(renderer);
 
+	SDL_FreeSurface(surface);
+	SDL_DestroyTexture(texture);
 }
 
 

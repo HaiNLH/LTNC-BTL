@@ -24,6 +24,10 @@ public:
 	Vector2& getInitMousePos() {
 		return initMousePos;
 	}
+	int getSwings() {
+		return swing;
+	}
+	void setSwing(int p_swing);
 	void setVelocity(float x, float y);
 	void setInitMousePos(float x, float y);
 	void updateGame( bool mousestate1, bool mousestate2,float time,Goal target, std:: vector <Object> obstacle, Mix_Chunk* golfhit, Mix_Chunk* goalhit);
@@ -41,6 +45,7 @@ private:
 	Vector2 velocity;
 	Vector2 initMousePos;
 	Vector2 initVelocity;
+	int swing = 0;
 	int vecy = 1;
 	int vecx = 1;
 	bool winner = false;
