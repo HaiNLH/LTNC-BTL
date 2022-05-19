@@ -11,10 +11,17 @@
 class RenderWindow
 {
 public:
+	RenderWindow(){}
 	RenderWindow(const char* p_title, int p_w, int p_h);
 	SDL_Texture* loadTexture(const char* p_filePath);
-	
-	
+	SDL_Renderer* getRender()
+	{
+		return renderer;
+	}
+	SDL_Window* getWindow()
+	{
+		return window;
+	}
 	void cleanUp();
 	void clear();
 	void rendercircle(Entity& p_entity);

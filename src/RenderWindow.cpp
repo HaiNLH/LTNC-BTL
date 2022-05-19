@@ -89,14 +89,14 @@ void RenderWindow::render(int p_x, int p_y, SDL_Texture* p_tex)
 
 void RenderWindow::renderword(const char* p_text, TTF_Font* font, SDL_Color textColor, int p_x, int p_y)
 {
-	SDL_Surface* surface = TTF_RenderText_Blended(font,
+	SDL_Surface* surface = TTF_RenderText_Solid(font,
 		p_text, textColor);
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 
 	int texW = 0;
 	int texH = 0;
 	SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
-	SDL_Rect dstrect = { p_x, p_y, texW, texH };
+	SDL_Rect dstrect = { p_x - (texW / 2.0f), p_y, texW, texH };
 	SDL_RenderCopy(renderer, texture, NULL, &dstrect);
 	//SDL_RenderPresent(renderer);
 
