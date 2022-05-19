@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
@@ -68,6 +69,8 @@ SDL_Texture* uihelpTexture1 = window.loadTexture("animation/uihelp1.png");
 SDL_Texture* uihelpTexture2 = window.loadTexture("animation/uihelp2.png");
 SDL_Texture* overlay = window.loadTexture("animation/overlay.png");
 SDL_Texture* notcontinue = window.loadTexture("animation/continuenot.png");
+SDL_Texture* continue1 = window.loadTexture("animation/continue1.png");
+SDL_Texture* continue2 = window.loadTexture("animation/continue2.png");
 SDL_Texture* soundTexture = window.loadTexture("animation/sound.png");
 SDL_Texture* soundTexture1 = window.loadTexture("animation/sound1.png");
 SDL_Texture* soundTexture2 = window.loadTexture("animation/sound2.png");
@@ -76,31 +79,36 @@ SDL_Texture* homeButton = window.loadTexture("animation/homeButton.png");
 SDL_Texture* homeButton1 = window.loadTexture("animation/homeButton1.png");
 SDL_Texture* restartButton = window.loadTexture("animation/restartButton.png");
 SDL_Texture* restartButton1 = window.loadTexture("animation/restartButton1.png");
-
+SDL_Texture* endscreen = window.loadTexture("animation/endscreen.png");
+SDL_Texture* guide = window.loadTexture("animation/guide.png");
+SDL_Texture* river = window.loadTexture("animation/river.png");
 
 
 Mix_Chunk* golfhit = Mix_LoadWAV("sfx/golfhit.wav");
 Mix_Chunk* goalhit = Mix_LoadWAV("sfx/goalsound.wav");
 Mix_Chunk* gameMusic = Mix_LoadWAV("sfx/gameMusic.wav");
 Mix_Chunk* buttonPressed = Mix_LoadWAV("sfx/buttonPressed.wav");
+Mix_Chunk* watersound = Mix_LoadWAV("sfx/watersound.wav");
 
 Mix_Music* introSFX = Mix_LoadMUS("sfx/intro.mp3");
 Mix_Music* gameSFX = Mix_LoadMUS("sfx/gameSFX.mp3");
 //std::vector <Object> obstacles;
-#define MAX_LEVEL 2
+#define MAX_LEVEL 4
 float stateMachine = 0;
 int minorState = 0;
 bool gameRunning = true;
 bool mousestate1 = false;
 bool mousestate2 = false;
 bool winner = false; 
+bool savegame = true;
 double deltaTime = 0;
 int level = 1;
 int menuState = 0;
+bool newgame = true;
 SDL_Event event;
 
 ui sound[3] = { ui(Vector2(0,900),soundTexture), ui(Vector2(0,905),soundTexture1), ui(Vector2(0,905),soundTexture2)};
-ui p_continue[1] = { ui(Vector2(254,577),notcontinue) };
+ui p_continue[3] = { ui(Vector2(254,587),notcontinue),ui(Vector2(254,577),continue1),ui(Vector2(254,587),continue2) };
 ui help[2] = { ui(Vector2(254,677),uihelpTexture1),ui(Vector2(254,687),uihelpTexture2) };
 ui hud[2] = { ui(Vector2(254,477),uistartTexture),ui(Vector2(254,487),uistartTexture1) };
 
@@ -110,14 +118,48 @@ Menu MenuBackground(Vector2(0,0),menuBG);
 Menu button[4] = { Menu(Vector2(204,396),homeButton),Menu(Vector2(204,403),homeButton1),Menu(Vector2(304,396),restartButton),Menu(Vector2(304,403),restartButton1) };
 ui soundMenu[3] = { ui(Vector2(404,396),soundTexture), ui(Vector2(404,403),soundTexture1), ui(Vector2(404,403),soundTexture2) };
 
-
+std::vector <water> loadWater(int level)
+{
+	std::vector <water> temp = {};
+	switch (level)
+	{
+	case 1:
+		temp.push_back(water(Vector2(0, 300), river));
+		temp.push_back(water(Vector2(128, 300), river));
+		temp.push_back(water(Vector2(384, 300), river));
+		temp.push_back(water(Vector2(512, 300), river));
+		break;
+		
+	case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+		
+	}
+	return temp;
+}
+std::vector<water> water2 = loadWater(level);
 std::vector<Object> loadMap(int level)
 {
 	std::vector <Object> tmp = {};
 	switch (level)
 	{
 	case 1:
-		tmp.push_back(Object(Vector2(32 *10 , 400), obstacleTexture1));
+
+		break;
+	case 2:
+		tmp.push_back(Object(Vector2(320, 64 * 2), obstacleTexture));
+		tmp.push_back(Object(Vector2(320, 64 * 3), obstacleTexture));
+		tmp.push_back(Object(Vector2(320, 64 * 4), obstacleTexture));
+		tmp.push_back(Object(Vector2(320, 64 * 5), obstacleTexture));
+		tmp.push_back(Object(Vector2(320, 64 * 6), obstacleTexture));
+		tmp.push_back(Object(Vector2(320, 64 * 7), obstacleTexture));
+		tmp.push_back(Object(Vector2(320, 64 * 8), obstacleTexture));
+		break;
+	case 3:
+		tmp.push_back(Object(Vector2(32 * 10, 400), obstacleTexture1));
 		tmp.push_back(Object(Vector2(32 * 10, 400), obstacleTexture1));
 		tmp.push_back(Object(Vector2(32 * 11, 400), obstacleTexture1));
 		tmp.push_back(Object(Vector2(32 * 12, 400), obstacleTexture1));
@@ -128,7 +170,9 @@ std::vector<Object> loadMap(int level)
 		tmp.push_back(Object(Vector2(32 * 17, 400), obstacleTexture1));
 		tmp.push_back(Object(Vector2(32 * 18, 400), obstacleTexture1));
 		tmp.push_back(Object(Vector2(32 * 19, 400), obstacleTexture1));
-		tmp.push_back(Object(Vector2(0, 200), barTexture));
+		tmp.push_back(Object(Vector2(0, 300), barTexture));
+		tmp.push_back(Object(Vector2(160, 300), barTexture));
+		tmp.push_back(Object(Vector2(480, 200), barTexture));
 		tmp.push_back(Object(Vector2(0, 480), obstacleTexture));
 		tmp.push_back(Object(Vector2(64, 480), obstacleTexture));
 		tmp.push_back(Object(Vector2(64 * 2, 480), obstacleTexture));
@@ -136,24 +180,27 @@ std::vector<Object> loadMap(int level)
 		tmp.push_back(Object(Vector2(64 * 4, 480), obstacleTexture));
 		tmp.push_back(Object(Vector2(64 * 5, 480), obstacleTexture));
 		tmp.push_back(Object(Vector2(64 * 6, 480), obstacleTexture));
-		
 		break;
-	case 2:
-		tmp.push_back(Object(Vector2(0, 480), obstacleTexture));
-		tmp.push_back(Object(Vector2(64, 480), obstacleTexture));
-		tmp.push_back(Object(Vector2(64 * 5, 480), obstacleTexture));
-		tmp.push_back(Object(Vector2(64 * 6, 480), obstacleTexture));
-		tmp.push_back(Object(Vector2(64 * 7, 480), obstacleTexture));
-		tmp.push_back(Object(Vector2(64 * 8, 480), obstacleTexture));
-		tmp.push_back(Object(Vector2(64 * 9, 480), obstacleTexture));
+	case 4:
+
+		tmp.push_back(Object(Vector2(320, 64 * 2), obstacleTexture));
+		tmp.push_back(Object(Vector2(320, 64 * 3), obstacleTexture));
+		tmp.push_back(Object(Vector2(320, 64 * 4), obstacleTexture));
+		tmp.push_back(Object(Vector2(320, 64 * 5), obstacleTexture));
+		tmp.push_back(Object(Vector2(320, 64 * 6), obstacleTexture));
+		tmp.push_back(Object(Vector2(320, 64 * 7), obstacleTexture));
+		tmp.push_back(Object(Vector2(320, 64 * 8), obstacleTexture));
+		tmp.push_back(Object(Vector2(0, 300), barTexture));
+		tmp.push_back(Object(Vector2(160, 400), barTexture));
+		tmp.push_back(Object(Vector2(384, 400), barTexture));
+		tmp.push_back(Object(Vector2(480, 200), barTexture));
 		break;
 	}
-
 	return tmp;
 }
 std::vector <Object> obstacle = loadMap(level);
 bool inside(int x, int y, int mPosx, int mPosy, int w , int h)
-{	
+{
 	if (x > mPosx && x<mPosx + w && y>mPosy && y < mPosy + h)
 	{
 		return true;
@@ -166,18 +213,67 @@ void loadLevel(int level)
 	golf.setScale(1, 1);
 	golf.setWinState(false);
 	obstacle = loadMap(level);
+	water2 = loadWater(level);
 	std::cerr << level << std::endl;
 	switch (level)
 	{
 	case 1:
-		golf.setPos(355,800);
-		target.setPos(355,100);
+		golf.setPos(320, 800);
+		target.setPos(320, 100);
 		break;
 	case 2:
-		golf.setPos(100, 300);
-		target.setPos(400, 800);
+		golf.setPos(330, 80);
+		target.setPos(320, 800);
 		break;
+
+	case 3:
+		golf.setPos(320, 800);
+		target.setPos(320, 100);
+		break;
+	case 4:
+		golf.setPos(330, 80);
+		target.setPos(320, 800);
+		break;
+
 	}
+
+}
+void save_game()
+{
+	std::ofstream save("game_save");
+
+	save << golf.getPos().x;
+	save << " ";
+	save << golf.getPos().y;
+	save << "\n";
+	save << level;
+	save << " ";
+	save << golf.getSwings();
+	save.close();
+}
+
+void load_files()
+{
+	std::ifstream load("game_save"); 
+		if (load)
+		{
+			float mPosx, mPosy;
+			int tmplevel;
+			int shot;
+			load >> mPosx;
+			load >> mPosy;
+			
+			load.ignore();
+			load >> tmplevel;
+			load >> shot;
+			golf.setSwing(shot);
+			level = tmplevel;
+			loadLevel(level);
+			
+			golf.setPos(mPosx, mPosy);
+			load.close();
+		}
+
 
 }
 void displayMenu()
@@ -197,10 +293,13 @@ void displayMenu()
 	if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
 	{
 		if (inside(x, y, button[0].getPos().x, button[0].getPos().y, button[0].getCurrentFrame().w, button[0].getCurrentFrame().h))
-		{
+		{	
+			save_game();
+			savegame = true;
 			Mix_PlayChannel(-1, buttonPressed, 0);
 			stateMachine = 0;
 			menuState = 0;
+			
 		}
 		else if (inside(x, y, button[2].getPos().x, button[2].getPos().y, button[2].getCurrentFrame().w, button[2].getCurrentFrame().h))
 		{
@@ -290,7 +389,7 @@ void update()
 		}
 	}
 	
-	golf.updateGame( mousestate1, mousestate2, deltaTime, target, obstacle, golfhit, goalhit);
+	golf.updateGame( mousestate1, mousestate2, deltaTime, target, obstacle,water2, golfhit, goalhit,  watersound);
 	if (golf.getWinState()&&level>MAX_LEVEL)
 	{	
 			
@@ -313,7 +412,10 @@ void loadButton()
 		window.render(hud[1]);
 	else window.render(hud[0]);
 
-	if (inside(x, y, help[0].getPos().x, help[0].getPos().y, help[0].getCurrentFrame().w, help[0].getCurrentFrame().h)) window.render(help[1]);
+	if (inside(x, y, help[0].getPos().x, help[0].getPos().y, help[0].getCurrentFrame().w, help[0].getCurrentFrame().h)) {
+		window.render(help[1]);
+		window.render(30, 120, guide);
+	}
 	else window.render(help[0]);
 	if (inside(x, y, sound[0].getPos().x, sound[0].getPos().y, sound[0].getCurrentFrame().w, sound[0].getCurrentFrame().h)&&Mix_VolumeMusic(-1)!=0)
 	{
@@ -323,7 +425,11 @@ void loadButton()
 	else if(Mix_VolumeMusic(-1) != 0) window.render(sound[0]);
 	else if(Mix_VolumeMusic(-1) == 0)window.render(sound[2]);
 	
-	window.render(p_continue[0]);
+	if(!savegame) window.render(p_continue[0]);
+	else {
+		if (inside(x, y, p_continue[1].getPos().x, p_continue[1].getPos().y, p_continue[1].getCurrentFrame().w, p_continue[1].getCurrentFrame().h)) window.render(p_continue[2]);
+		else window.render(p_continue[1]);
+	}
 
 }
 void intro()
@@ -341,6 +447,10 @@ void intro()
 	}
 	if (event.button.button == SDL_BUTTON_LEFT && inside(event.motion.x, event.motion.y, hud[0].getPos().x, hud[0].getPos().y, hud[0].getCurrentFrame().w, hud[0].getCurrentFrame().h))
 	{
+		golf.setScale(1, 1);
+		level = 1;
+		golf.setSwing(0);
+		loadLevel(1);
 		Mix_PlayChannel(-1, buttonPressed, 0);
 		stateMachine = 1;
 	}
@@ -354,6 +464,14 @@ void intro()
 		else {
 			Mix_VolumeMusic(128);
 		}
+	}
+	if (event.button.button == SDL_BUTTON_LEFT && inside(event.motion.x, event.motion.y, p_continue[1].getPos().x, p_continue[1].getPos().y, p_continue[1].getCurrentFrame().w, p_continue[1].getCurrentFrame().h)&&savegame)
+	{
+		Mix_PlayChannel(-1, buttonPressed, 0);
+		load_files();
+		//loadLevel(level);
+		stateMachine = 1;
+		
 	}
 	loadButton();
 	window.display();
@@ -377,13 +495,15 @@ void outtro() {
 				golf.setScale(1, 1);
 				level = 1;
 				golf.setSwing(0);
+				savegame = false;
 				loadLevel(1);
+				
 			}
 			break;
 		}
 	}
 	window.clear();
-	window.renderword("GAME OVER", font, color, 220, 480);
+	window.render(0,0,endscreen);
 	window.display();
 }
 void display()
@@ -392,10 +512,15 @@ void display()
 		window.render(0, 0, background);
 		window.render(target);
 		window.render(golf);
+		for (water& w : water2)
+		{
+			window.render(w);
+		}
 		for (Object& o : obstacle)
 		{
 			window.render(o);
 		}
+		
 		
 		for (Entity& e : golf.getArrow())
 		{
@@ -405,17 +530,56 @@ void display()
 		std::string levelText = "LEVEL: " + std::to_string(level);
 		
 		window.render(0, 0, overlay);
-		window.renderword(swing.c_str(), font, color, 0, 5);
+		window.renderword(swing.c_str(), font, color, 140, 5);
 
 		window.render(380, 0, overlay);
-		window.renderword(levelText.c_str(), font, color, 400, 5);
+		window.renderword(levelText.c_str(), font, color, 505, 5);
 		
 		
 		//window.display();
 }
+std::string input;
+
+void getUserName()
+{
+	SDL_StartTextInput();
+	static const unsigned char* keys = SDL_GetKeyboardState(NULL);
+
+	SDL_Event e;
+
+
+	// Clear the window to white
+
+	window.render(0, 0, startTexture);
+	window.renderword("ENTER YOUR NAME: ", font, color, 350,300);
+	// Event loop
+	while (SDL_PollEvent(&e) != 0) {
+		switch (e.type) {
+		case SDL_QUIT:
+			gameRunning = false;
+		case SDL_TEXTINPUT:
+			input += e.text.text;
+			break;
+		case SDL_KEYDOWN:
+			if (e.key.keysym.sym == SDLK_BACKSPACE && input.size()) {
+				input.pop_back();
+			}
+			 if (e.key.keysym.sym == SDLK_KP_ENTER && input.size())
+			{
+
+				stateMachine = 3;
+			}
+			break;
+		
+		}
+	}
+
+	window.renderword(input.c_str(), font, color, 320, 380);
+	window.display();
+
+}
 void gameLoad()
 {
-
 	if (stateMachine == 0)
 	{	
 
@@ -423,12 +587,10 @@ void gameLoad()
 		{
 			Mix_PlayMusic(introSFX, -1);
 		}
-
 		intro(); 
-		
 	}
-	else if(stateMachine==1) {
-
+	else if(stateMachine==1) 
+	{
 		update();
 		display();
 		if (menuState == 1)
@@ -436,7 +598,6 @@ void gameLoad()
 			displayMenu();
 		}
 		window.display();
-
 	}
 	else if (stateMachine == 2)
 	{
@@ -444,12 +605,29 @@ void gameLoad()
 		{
 			Mix_ResumeMusic();
 		}
-		
-		outtro();
+
+		if (golf.getSwings() < 20)
+		{
+			getUserName();
+
+		}
+		else {
+			stateMachine = 3;
+		}
 
 	}
-	
+	else if (stateMachine == 3)
+	{
+		if (Mix_PausedMusic() == 1)
+		{
+			Mix_ResumeMusic();
+		}
+		
+
+		outtro();
+	} 
 }
+
 
 
 
