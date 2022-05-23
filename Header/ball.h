@@ -9,6 +9,7 @@
 #include "Math.h"
 #include "Goal.h"
 #include "object.h"
+#include "water.h"
 class Ball :public Entity {
 public:
 	Ball(Vector2 p_pos, SDL_Texture* p_tex,SDL_Texture* arrow_tex);
@@ -20,7 +21,6 @@ public:
 	{
 		return arrow;
 	}
-	//dang bi thừa
 	Vector2& getInitMousePos() {
 		return initMousePos;
 	}
@@ -30,7 +30,7 @@ public:
 	void setSwing(int p_swing);
 	void setVelocity(float x, float y);
 	void setInitMousePos(float x, float y);
-	void updateGame( bool mousestate1, bool mousestate2,float time,Goal target, std:: vector <Object> obstacle, Mix_Chunk* golfhit, Mix_Chunk* goalhit);
+	void updateGame( bool mousestate1, bool mousestate2,float time,Goal target, std:: vector <Object> obstacle,std::vector<water> river, Mix_Chunk* golfhit, Mix_Chunk* goalhit, Mix_Chunk* watersound);
 	void setInitVelocity(float x, float y);
 	void setWinState(bool win);
 	bool getWinState()
@@ -39,7 +39,7 @@ public:
 	}
 
 private:
-	Vector2 goal;//wasted
+	Vector2 goal;
 	float vantoc;
 	float vantocbandau;
 	Vector2 velocity;
@@ -52,6 +52,5 @@ private:
 	bool accessible = true;
 	bool chargedone = true;
 	const float friction = 0.08;
-	//Entity arrow;
 	std::vector <Entity> arrow;
 };

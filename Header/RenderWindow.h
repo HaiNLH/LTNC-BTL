@@ -11,8 +11,8 @@
 class RenderWindow
 {
 public:
-	RenderWindow(){}
-	RenderWindow(const char* p_title, int p_w, int p_h);
+
+	RenderWindow();
 	SDL_Texture* loadTexture(const char* p_filePath);
 	SDL_Renderer* getRender()
 	{
@@ -31,7 +31,7 @@ public:
 	//void render(SDL_Texture* p_tex);
 	void display();
 
-private:
+protected:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 

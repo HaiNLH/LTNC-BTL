@@ -40,7 +40,7 @@ void Ball::setSwing(int p_swing)
 {
 	swing = p_swing;
 }
-void Ball::updateGame( bool mousestate1, bool mousestate2, float time, Goal target,std:: vector <Object> obstacle, Mix_Chunk* golfhit, Mix_Chunk* goalhit)
+void Ball::updateGame( bool mousestate1, bool mousestate2, float time, Goal target,std:: vector <Object> obstacle, std::vector<water> river, Mix_Chunk* golfhit, Mix_Chunk* goalhit, Mix_Chunk* watersound)
 {	
 	if (winner)
 	{
@@ -60,7 +60,6 @@ void Ball::updateGame( bool mousestate1, bool mousestate2, float time, Goal targ
 		{
 			setPos(getPos().x, getPos().y -= 0.1 * time);
 		}
-		//tPos(goal.x + 24, goal.y + 24);
 		
 		setScale(getScale().x - 0.001 * time, getScale().y - 0.001 * time);
 	}
@@ -176,8 +175,16 @@ void Ball::updateGame( bool mousestate1, bool mousestate2, float time, Goal targ
 				setVelocity(getVelocity().x , getVelocity().y* -1);
 			}
 		}
-		
-		
-		
+		for (water& w : river)
+		{
+			float mPosX = getPos().x + getVelocity().x * time;
+			if (mPosX + 32 > w.getPos().x && mPosX<w.getPos().x + w.getCurrentFrame().w && getPos().y + 32 >w.getPos().y && getPos().y < w.getPos().y + w.getCurrentFrame().h)
+			{	
+				Mix_PlayChannel(-1, watersound, 0);
+				setPos(120,800);
+				setVelocity(0, 0);
+				swing += 5;
+			}			
+		}
 	}
 }
