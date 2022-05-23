@@ -52,11 +52,11 @@ bool SDLInitEverything = init();
 
 
 TTF_Font* font = TTF_OpenFont("font/pixelfont2.ttf", 35);
-TTF_Font* font1= TTF_OpenFont("font/pixelfont1.ttf", 25);
+TTF_Font* font1 = TTF_OpenFont("font/pixelfont1.ttf", 25);
 TTF_Font* font2 = TTF_OpenFont("font/pixelfont2.ttf", 35);
 
 SDL_Color color = { 255, 255, 255 };
-SDL_Color color2 = {233,74,1};
+SDL_Color color2 = { 233,74,1 };
 
 SDL_Texture* ballTexture = window.loadTexture("animation/golfballofficial.png");
 SDL_Texture* background = window.loadTexture("animation/bg.png");
@@ -210,9 +210,9 @@ bool inside(int x, int y, int mPosx, int mPosy, int w, int h)
 	}
 	else return false;
 }
-const int songs= 7;
+const int songs = 7;
 Mix_Music* MUSIC[songs];
-std::string Music[songs] = {"comealongwithme","zen_zen_zense","bad_liar", "canon_rock","abcdefu","unstoppable" , "see_tinh"};
+std::string Music[songs] = { "comealongwithme","zen_zen_zense","bad_liar", "canon_rock","abcdefu","unstoppable" , "see_tinh" };
 
 
 /*void name_music()
@@ -236,7 +236,7 @@ void load_music()
 	std::string MP3 = ".mp3";
 	for (int i = 0; i < songs; i++)
 	{
-		MUSIC[i]=(Mix_LoadMUS((location + Music[i] + MP3).c_str()));
+		MUSIC[i] = (Mix_LoadMUS((location + Music[i] + MP3).c_str()));
 	}
 
 }
@@ -331,7 +331,7 @@ void load_name()
 	if (load) {
 		load >> shots;
 		load.ignore();
-		getline(load,user_name);
+		getline(load, user_name);
 		load.close();
 	}
 }
@@ -526,9 +526,9 @@ void intro()
 {
 	window.clear();
 	window.render(0, 0, startTexture);
-	window.render(42, 240 - 100 - 50 + 4 * SDL_sin(SDL_GetTicks()*3.14/1000 ), titleStart);
-	std::string rec = "CURRENT RECORD: " + user_name + " - " + std::to_string(shots) +" SWINGS";
-	window.renderword(rec.c_str() , font1, color, 320, 5);
+	window.render(42, 240 - 100 - 50 + 4 * SDL_sin(SDL_GetTicks() * 3.14 / 1000), titleStart);
+	std::string rec = "CURRENT RECORD: " + user_name + " - " + std::to_string(shots) + " SWINGS";
+	window.renderword(rec.c_str(), font1, color, 320, 5);
 	if (SDL_PollEvent(&event) == 0) {}
 	else if (event.type == SDL_QUIT)
 	{
@@ -568,7 +568,7 @@ void intro()
 		else Mix_PauseMusic();
 	}
 	if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT) {
-		
+
 		playlist++;
 		Mix_HaltMusic();
 	}
@@ -678,7 +678,7 @@ void getUserName()
 		case SDL_QUIT:
 			gameRunning = false;
 		case SDL_TEXTINPUT:
-			if(input.size()<12)
+			if (input.size() < 12)
 				input += e.text.text;
 			break;
 		case SDL_KEYDOWN:
@@ -704,16 +704,15 @@ void getUserName()
 void gameLoad()
 {
 	load_name();
-	load_music();
 	if (stateMachine == 0)
-	{	
-		if (Mix_PlayingMusic()==0)
+	{
+		if (Mix_PlayingMusic() == 0)
 		{
-			if (playlist > songs-1)playlist = 0;
-			else if (playlist < 0) playlist = songs-1;
+			if (playlist > songs - 1)playlist = 0;
+			else if (playlist < 0) playlist = songs - 1;
 			Mix_PlayMusic(MUSIC[playlist], 0);
 		}
-	 	intro();
+		intro();
 	}
 	else if (stateMachine == 1)
 	{
@@ -771,8 +770,9 @@ void gameLoad()
 
 int main(int argc, char* args[])
 {
-
+	
 	loadLevel(level);
+	load_music();
 	while (gameRunning)
 	{
 		gameLoad();
