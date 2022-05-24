@@ -14,7 +14,7 @@
 #include "object.h"
 #include "ui.h"
 #include "gamemenu.h"
-
+#include "tunnel.h"
 
 RenderWindow window;
 bool init()
@@ -86,7 +86,8 @@ SDL_Texture* restartButton1 = window.loadTexture("animation/restartButton1.png")
 SDL_Texture* endscreen = window.loadTexture("animation/endscreen.png");
 SDL_Texture* guide = window.loadTexture("animation/guide.png");
 SDL_Texture* river = window.loadTexture("animation/river.png");
-
+SDL_Texture* hole1 = window.loadTexture("animation/void1.png");
+SDL_Texture* hole2 = window.loadTexture("animation/void2.png");
 
 Mix_Chunk* golfhit = Mix_LoadWAV("sfx/golfhit.wav");
 Mix_Chunk* goalhit = Mix_LoadWAV("sfx/goalsound.wav");
@@ -115,6 +116,7 @@ ui p_continue[3] = { ui(Vector2(254,587),notcontinue),ui(Vector2(254,577),contin
 ui help[2] = { ui(Vector2(254,677),uihelpTexture1),ui(Vector2(254,687),uihelpTexture2) };
 ui hud[2] = { ui(Vector2(254,477),uistartTexture),ui(Vector2(254,487),uistartTexture1) };
 
+tunnel hole[2] = { tunnel(Vector2(0,0),hole1), tunnel(Vector2(0,0),hole2) };
 Ball golf(Vector2(0, 0), ballTexture, arrowTexture);
 Goal target(Vector2(0, 0), goalTexture);
 Menu MenuBackground(Vector2(0, 0), menuBG);
@@ -129,6 +131,7 @@ std::vector <water> loadWater(int level)
 	case 1:
 		temp.push_back(water(Vector2(0, 300), river));
 		temp.push_back(water(Vector2(128, 300), river));
+		temp.push_back(water(Vector2(256, 300), river));
 		temp.push_back(water(Vector2(384, 300), river));
 		temp.push_back(water(Vector2(512, 300), river));
 		break;
@@ -215,20 +218,6 @@ Mix_Music* MUSIC[songs];
 std::string Music[songs] = { "comealongwithme","zen_zen_zense","bad_liar", "canon_rock","abcdefu","unstoppable" , "see_tinh" };
 
 
-/*void name_music()
-{
-	std::ifstream file("sfx\music\Music.txt");
-
-	//file >> index;
-	//Music.resize(index);
-	while(file&&!file.eof())
-	{
-		std::string tmp;
-		getline(file, tmp);
-		Music.push_back(tmp);
-	}
-	file.close();
-}*/
 int playlist = 0;
 void load_music()
 {
@@ -253,19 +242,27 @@ void loadLevel(int level)
 	switch (level)
 	{
 	case 1:
+		hole[0].setPos(100,100);
+		hole[1].setPos(480,500);
 		golf.setPos(320, 800);
 		target.setPos(320, 100);
 		break;
 	case 2:
+		hole[0].setPos(-100, -100);
+		hole[1].setPos(-100, -100);
 		golf.setPos(330, 80);
 		target.setPos(320, 800);
 		break;
 
 	case 3:
+		hole[0].setPos(-100, -100);
+		hole[1].setPos(-100, -100);
 		golf.setPos(320, 800);
 		target.setPos(320, 100);
 		break;
 	case 4:
+		hole[0].setPos(-100, -100);
+		hole[1].setPos(-100, -100);
 		golf.setPos(330, 80);
 		target.setPos(320, 800);
 		break;
@@ -479,7 +476,7 @@ void update()
 		playlist--;
 		Mix_HaltMusic();
 	}
-	golf.updateGame(mousestate1, mousestate2, deltaTime, target, obstacle, water2, golfhit, goalhit, watersound);
+	golf.updateGame(mousestate1, mousestate2, deltaTime, target, obstacle, water2, golfhit, goalhit, watersound, hole);
 	if (golf.getWinState() && level > MAX_LEVEL)
 	{
 
@@ -631,6 +628,8 @@ void display()
 	window.render(0, 0, background);
 	window.render(target);
 	window.render(golf);
+	window.render(hole[0]);
+	window.render(hole[1]);
 	for (water& w : water2)
 	{
 		window.render(w);

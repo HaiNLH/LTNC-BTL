@@ -40,7 +40,7 @@ void Ball::setSwing(int p_swing)
 {
 	swing = p_swing;
 }
-void Ball::updateGame( bool mousestate1, bool mousestate2, float time, Goal target,std:: vector <Object> obstacle, std::vector<water> river, Mix_Chunk* golfhit, Mix_Chunk* goalhit, Mix_Chunk* watersound)
+void Ball::updateGame( bool mousestate1, bool mousestate2, float time, Goal target,std:: vector <Object> obstacle, std::vector<water> river, Mix_Chunk* golfhit, Mix_Chunk* goalhit, Mix_Chunk* watersound, tunnel hole[2])
 {	
 	if (winner)
 	{
@@ -185,6 +185,11 @@ void Ball::updateGame( bool mousestate1, bool mousestate2, float time, Goal targ
 				setVelocity(0, 0);
 				swing += 5;
 			}			
+		}
+
+		if (getPos().x >= hole[1].getPos().x - 24 && getPos().x <= hole[1].getPos().x + 24 && getPos().y >= hole[1].getPos().y - 24 && getPos().y <= hole[1].getPos().y + 24)
+		{
+			setPos(hole[0].getPos().x, hole[0].getPos().y);
 		}
 	}
 }
