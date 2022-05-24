@@ -8,6 +8,7 @@
 #include "Entity.h"
 #include "Math.h"
 #include "Goal.h"
+#include "tunnel.h"
 #include "object.h"
 #include "water.h"
 class Ball :public Entity {
@@ -30,7 +31,7 @@ public:
 	void setSwing(int p_swing);
 	void setVelocity(float x, float y);
 	void setInitMousePos(float x, float y);
-	void updateGame( bool mousestate1, bool mousestate2,float time,Goal target, std:: vector <Object> obstacle,std::vector<water> river, Mix_Chunk* golfhit, Mix_Chunk* goalhit, Mix_Chunk* watersound);
+	void updateGame( bool mousestate1, bool mousestate2,float time,Goal target, std:: vector <Object> obstacle,std::vector<water> river, Mix_Chunk* golfhit, Mix_Chunk* goalhit, Mix_Chunk* watersound, tunnel hole[2]);
 	void setInitVelocity(float x, float y);
 	void setWinState(bool win);
 	bool getWinState()
